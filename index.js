@@ -1,13 +1,13 @@
 const { prompt } = require("inquirer");
 const logo = require("asciiart-logo");
-const db = require("./db");
+const db = require("./main/db");
 require("console.table");
 
 init();
 
 // Display logo text, load main prompts
 function init() {
-  const logoText = logo({ name: "Employee Manager" }).render();
+  const logoText = logo({ name: "Employee Manager Book" }).render();
 
   console.log(logoText);
 
@@ -140,9 +140,9 @@ function loadMainPrompts() {
 function viewEmployees() {
   db.findAllEmployees()
     .then(([rows]) => {
-      let employees = rows;
+      let employee = rows;
       console.log("\n");
-      console.table(employees);
+      console.table(employee);
     })
     .then(() => loadMainPrompts());
 }
@@ -162,7 +162,7 @@ function viewEmployeesByDepartment() {
           type: "list",
           name: "departmentId",
           message: "Which department would you like to see employees for?",
-          choices: departmentChoices
+          choices: ["Manager", "Associate", "Soft"]
         }
       ])
         .then(res => db.findAllEmployeesByDepartment(res.departmentId))
