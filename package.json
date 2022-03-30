@@ -1,0 +1,19 @@
+{
+  "name": "homework12_employee-tracker",
+  "version": "1.0.0",
+  "description": "msql with inquirer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CalvinTurner10/Homework12_Employee-Tracker.git"
+  },
+  "author": "Calvin Turner",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CalvinTurner10/Homework12_Employee-Tracker/issues"
+  },
+  "homepage": "https://github.com/CalvinTurner10/Homework12_Employee-Tracker#readme"
+}
