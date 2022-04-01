@@ -29,10 +29,7 @@ function loadMainPrompts() {
           name: "View All Employees By Department",
           value: "VIEW_EMPLOYEES_BY_DEPARTMENT"
         },
-        {
-          name: "View All Employees By Manager",
-          value: "VIEW_EMPLOYEES_BY_MANAGER"
-        },
+    
         {
           name: "Add Employee",
           value: "ADD_EMPLOYEE"
@@ -44,10 +41,6 @@ function loadMainPrompts() {
         {
           name: "Update Employee Role",
           value: "UPDATE_EMPLOYEE_ROLE"
-        },
-        {
-          name: "Update Employee Manager",
-          value: "UPDATE_EMPLOYEE_MANAGER"
         },
         {
           name: "View All Roles",
@@ -74,10 +67,6 @@ function loadMainPrompts() {
           value: "REMOVE_DEPARTMENT"
         },
         {
-          name: "View Total Utilized Budget By Department",
-          value: "VIEW_UTILIZED_BUDGET_BY_DEPARTMENT"
-        },
-        {
           name: "Quit",
           value: "QUIT"
         }
@@ -93,9 +82,6 @@ function loadMainPrompts() {
       case "VIEW_EMPLOYEES_BY_DEPARTMENT":
         viewEmployeesByDepartment();
         break;
-      case "VIEW_EMPLOYEES_BY_MANAGER":
-        viewEmployeesByManager();
-        break;
       case "ADD_EMPLOYEE":
         addEmployee();
         break;
@@ -105,9 +91,6 @@ function loadMainPrompts() {
       case "UPDATE_EMPLOYEE_ROLE":
         updateEmployeeRole();
         break;
-      case "UPDATE_EMPLOYEE_MANAGER":
-        updateEmployeeManager();
-        break;
       case "VIEW_DEPARTMENTS":
         viewDepartments();
         break;
@@ -116,9 +99,6 @@ function loadMainPrompts() {
         break;
       case "REMOVE_DEPARTMENT":
         removeDepartment();
-        break;
-      case "VIEW_UTILIZED_BUDGET_BY_DEPARTMENT":
-        viewUtilizedBudgetByDepartment();
         break;
       case "VIEW_ROLES":
         viewRoles();
@@ -162,7 +142,7 @@ function viewEmployeesByDepartment() {
           type: "list",
           name: "departmentId",
           message: "Which department would you like to see employees for?",
-          choices: ["Manager", "Associate", "Soft"]
+          choices: departmentChoices
         }
       ])
         .then(res => db.findAllEmployeesByDepartment(res.departmentId))
@@ -175,37 +155,6 @@ function viewEmployeesByDepartment() {
     });
 }
 
-// View all employees that report to a specific manager
-function viewEmployeesByManager() {
-  db.findAllEmployees()
-    .then(([rows]) => {
-      let managers = rows;
-      const managerChoices = managers.map(({ id, first_name, last_name }) => ({
-        name: `${first_name} ${last_name}`,
-        value: id
-      }));
-
-      prompt([
-        {
-          type: "list",
-          name: "managerId",
-          message: "Which employee do you want to see direct reports for?",
-          choices: managerChoices
-        }
-      ])
-        .then(res => db.findAllEmployeesByManager(res.managerId))
-        .then(([rows]) => {
-          let employees = rows;
-          console.log("\n");
-          if (employees.length === 0) {
-            console.log("The selected employee has no direct reports");
-          } else {
-            console.table(employees);
-          }
-        })
-        .then(() => loadMainPrompts())
-    });
-}
 
 // Delete an employee
 function removeEmployee() {
@@ -275,50 +224,6 @@ function updateEmployeeRole() {
     })
 }
 
-// Update an employee's manager
-function updateEmployeeManager() {
-  db.findAllEmployees()
-    .then(([rows]) => {
-      let employees = rows;
-      const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
-        name: `${first_name} ${last_name}`,
-        value: id
-      }));
-
-      prompt([
-        {
-          type: "list",
-          name: "employeeId",
-          message: "Which employee's manager do you want to update?",
-          choices: employeeChoices
-        }
-      ])
-        .then(res => {
-          let employeeId = res.employeeId
-          db.findAllPossibleManagers(employeeId)
-            .then(([rows]) => {
-              let managers = rows;
-              const managerChoices = managers.map(({ id, first_name, last_name }) => ({
-                name: `${first_name} ${last_name}`,
-                value: id
-              }));
-
-              prompt([
-                {
-                  type: "list",
-                  name: "managerId",
-                  message:
-                    "Which employee do you want to set as manager for the selected employee?",
-                  choices: managerChoices
-                }
-              ])
-                .then(res => db.updateEmployeeManager(employeeId, res.managerId))
-                .then(() => console.log("Updated employee's manager"))
-                .then(() => loadMainPrompts())
-            })
-        })
-    })
-}
 
 // View all roles
 function viewRoles() {
@@ -440,16 +345,7 @@ function removeDepartment() {
     })
 }
 
-// View all departments and show their total utilized department budget
-function viewUtilizedBudgetByDepartment() {
-  db.viewDepartmentBudgets()
-    .then(([rows]) => {
-      let departments = rows;
-      console.log("\n");
-      console.table(departments);
-    })
-    .then(() => loadMainPrompts());
-}
+
 
 // Add an employee
 function addEmployee() {
